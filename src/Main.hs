@@ -41,7 +41,7 @@ main = do
     \  body text not null,\
     \  headers text not null,\
     \  ip varchar(39));"
-  scotty 8080 $
+  scotty 8080 $ do
     post "/report/csp" $ do
       report <- body
       allHeaders <- headers
@@ -52,3 +52,6 @@ main = do
           liftIO $ insertDB conn (CSPReport Nothing r (show allHeaders) ipAddr)
           text ":)"
         Nothing -> text ":("
+    get "/healthcheck" $ do
+      [Only r] <- liftIO $ query_ conn "select 'working';"
+      text r
